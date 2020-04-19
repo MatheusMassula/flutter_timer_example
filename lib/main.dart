@@ -21,8 +21,6 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> with TickerProviderStateMixin {
   AnimationController controller;
 
-  // bool isPlaying = false;
-
   String get timerString {
     Duration duration = controller.duration * controller.value;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
@@ -35,14 +33,6 @@ class MyAppState extends State<MyApp> with TickerProviderStateMixin {
       vsync: this,
       duration: Duration(seconds: 10),
     );
-
-    // ..addStatusListener((status) {
-    //     if (controller.status == AnimationStatus.dismissed) {
-    //       setState(() => isPlaying = false);
-    //     }
-
-    //     print(status);
-    //   })
   }
 
   @override
@@ -67,10 +57,11 @@ class MyAppState extends State<MyApp> with TickerProviderStateMixin {
                           builder: (BuildContext context, Widget child) {
                             return CustomPaint(
                                 painter: TimerPainter(
-                              animation: controller,
-                              backgroundColor: Colors.white,
-                              color: themeData.indicatorColor,
-                            ));
+                                animation: controller,
+                                backgroundColor: Colors.white,
+                                color: themeData.indicatorColor,
+                              )
+                            );
                           },
                         ),
                       ),
@@ -85,13 +76,14 @@ class MyAppState extends State<MyApp> with TickerProviderStateMixin {
                               style: themeData.textTheme.subhead,
                             ),
                             AnimatedBuilder(
-                                animation: controller,
-                                builder: (BuildContext context, Widget child) {
-                                  return Text(
-                                    timerString,
-                                    style: themeData.textTheme.display4,
-                                  );
-                                }),
+                              animation: controller,
+                              builder: (BuildContext context, Widget child) {
+                                return Text(
+                                  timerString,
+                                  style: themeData.textTheme.display4,
+                                );
+                              }
+                            ),
                           ],
                         ),
                       ),
@@ -110,24 +102,20 @@ class MyAppState extends State<MyApp> with TickerProviderStateMixin {
                       animation: controller,
                       builder: (BuildContext context, Widget child) {
                         return Icon(controller.isAnimating
-                            ? Icons.pause
-                            : Icons.play_arrow);
-
-                        // Icon(isPlaying
-                        // ? Icons.pause
-                        // : Icons.play_arrow);
+                          ? Icons.pause
+                          : Icons.play_arrow
+                        );
                       },
                     ),
                     onPressed: () {
-                      // setState(() => isPlaying = !isPlaying);
-
                       if (controller.isAnimating) {
-                        controller.stop(canceled: true);
+                        setState(() {
+                          controller.stop(canceled: true);
+                        });
                       } else {
                         controller.reverse(
-                            from: controller.value == 0.0
-                                ? 1.0
-                                : controller.value);
+                          from: controller.value == 0.0 ? 1.0 : controller.value
+                        );
                       }
                     },
                   )
@@ -168,7 +156,7 @@ class TimerPainter extends CustomPainter {
   @override
   bool shouldRepaint(TimerPainter old) {
     return animation.value != old.animation.value ||
-        color != old.color ||
-        backgroundColor != old.backgroundColor;
+      color != old.color ||
+      backgroundColor != old.backgroundColor;
   }
 }
